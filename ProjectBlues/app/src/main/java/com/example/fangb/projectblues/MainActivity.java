@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -15,21 +16,34 @@ import com.google.gson.Gson;
 import java.util.Date;
 
 
-public class MyActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener {
 
-    private TextView textView;
-    private Game gameInfo;
     private final Gson gson = new Gson();
     private EditText homeTeam;
     private EditText awayTeam;
     private EditText rinkName;
     private EditText keyText;
+    private TextView textView;
+
+    private SharedPreferences prefs;
+    private final static String SHARED_PREFS_NAME = "BluesPreferences";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+        setContentView(R.layout.activity_main);
 
+        homeTeam = (EditText) findViewById(R.id.homeText);
+        awayTeam = (EditText) findViewById(R.id.awayText);
+        rinkName = (EditText) findViewById(R.id.rinkText);
+        keyText = (EditText) findViewById(R.id.keyText);
+        textView = (TextView) findViewById(R.id.textDisplay);
+
+        findViewById(R.id.saveButton).setOnClickListener(this);
+        findViewById(R.id.clearButton).setOnClickListener(this);
+        findViewById(R.id.displayButton).setOnClickListener(this);
+
+        prefs = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         //displayText(json);
         //Game gameInfo1 = gson.fromJson(json, Game.class);
         //displayText(gameInfo1.toString());
@@ -37,7 +51,7 @@ public class MyActivity extends Activity {
         //displayText("savedpreferences: " +  loadSavedPreferences("entry1"));
     }
 
-
+    // TODO: Use SherlockActionBar for backwards compatability
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -46,56 +60,34 @@ public class MyActivity extends Activity {
     }
 
     private void savePreferences(String key, String value) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     private String loadSavedPreferences(String key) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String gsonName = sharedPreferences.getString(key, "Invalid Key");
-        return gsonName;
+        return prefs.getString(key, "Invalid Key");
     }
 
     private void clearSavedPreferences(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
 
-    public void onClick_Save(View v){
-        homeTeam = (EditText) findViewById(R.id.homeText);
-        awayTeam = (EditText) findViewById(R.id.awayText);
-        rinkName = (EditText) findViewById(R.id.rinkText);
-        keyText = (EditText) findViewById(R.id.keyText);
-
-
+    public void save(){
         Date currDate = new Date(114, 1, 1, 1, 0);
-        gameInfo = new Game(homeTeam.getText().toString(), awayTeam.getText().toString(), currDate, rinkName.getText().toString());
-        //displayText(gameInfo.toString());
+        Game gameInfo = new Game(homeTeam.getText().toString(), awayTeam.getText().toString(),
+                currDate, rinkName.getText().toString());
         saveGame(gameInfo, keyText.getText().toString());
 
-        //savePreferences("entry1", json);
         displayText("savedpreferences: " +  loadSavedPreferences(keyText.getText().toString()));
     }
 
-    private void saveGame(Game gameInstance, String key){
-        String json = gson.toJson(gameInfo);
+    private void saveGame(Game game, String key){
+        String json = gson.toJson(game);
         savePreferences(key, json);
     }
-
-    public void onClick_Clear(View v){
-        clearSavedPreferences();
-        displayText("Cleared Shared Preferences");
-    }
-
-    public void onClick_Display(View v){
-        keyText = (EditText) findViewById(R.id.keyText);
-        displayText("savedpreferences: " +  loadSavedPreferences(keyText.getText().toString()));
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -110,7 +102,24 @@ public class MyActivity extends Activity {
     }
 
     private void displayText(String message) {
-        textView = (TextView) findViewById(R.id.textDisplay);
         textView.setText(message);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.saveButton:
+                save();
+                break;
+
+            case R.id.clearButton:
+                clearSavedPreferences();
+                displayText("Cleared Shared Preferences");
+                break;
+
+            case R.id.displayButton:
+                displayText("savedpreferences: " +  loadSavedPreferences(keyText.getText().toString()));
+                break;
+        }
     }
 }

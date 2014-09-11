@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MyActivity">
+    tools:context=".MainActivity">
 
     <TextView
         android:text="@string/hello_world"
@@ -64,8 +64,7 @@
         android:id="@+id/saveButton"
         android:layout_below="@+id/keyText"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="26dp"
-        android:onClick="onClick_Save" />
+        android:layout_marginTop="26dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -73,16 +72,14 @@
         android:text="Clear"
         android:id="@+id/clearButton"
         android:layout_alignBottom="@+id/saveButton"
-        android:layout_toEndOf="@+id/saveButton"
-        android:onClick="onClick_Clear" />
+        android:layout_toEndOf="@+id/saveButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Display"
-        android:id="@+id/displayButon"
+        android:id="@+id/displayButton"
         android:layout_alignBottom="@+id/clearButton"
-        android:layout_toEndOf="@+id/clearButton"
-        android:onClick="onClick_Display" />
+        android:layout_toEndOf="@+id/clearButton" />
 
 </RelativeLayout>
