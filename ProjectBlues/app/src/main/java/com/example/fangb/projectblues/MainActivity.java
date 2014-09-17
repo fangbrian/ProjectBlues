@@ -2,9 +2,11 @@ package com.example.fangb.projectblues;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.sax.Element;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 
@@ -60,7 +63,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //displayText("savedpreferences: " +  loadSavedPreferences("entry1"));
 
         //url = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
-        url = "http://www.androidbegin.com";
         testJSOUP();
     }
 
@@ -102,19 +104,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
         savePreferences(key, json);
     }
 
-    private void testJSOUP(){
+    private void testJSOUP() {
         //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
 
-        try {
-            Document doc  = Jsoup.connect(url).get();
-            displayText("TRYING JSOUP");
-            title = doc.title();
-            displayText("TITLE: " + title);
-        } catch (Throwable t) {
-                displayText("Exception");
-                t.printStackTrace();
-        }
+        HtmlParserTask task = new HtmlParserTask() {
+            @Override
+            protected void onPostExecute(String urlTitle) {
+                super.onPostExecute(urlTitle);
 
+                // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
+                // to call displayText here (if we tried in doInBackground, it will crash)
+                displayText("Title: " + urlTitle);
+            }
+        };
+        task.parseUrl("http://www.androidbegin.com");
     }
 
     @Override
