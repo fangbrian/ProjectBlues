@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.sax.Element;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,11 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.net.URL;
 import java.util.Date;
 
 
@@ -24,6 +30,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private EditText rinkName;
     private EditText keyText;
     private TextView textView;
+    private String url;
+    private String title;
+
 
     private SharedPreferences prefs;
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
@@ -49,6 +58,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //displayText(gameInfo1.toString());
         //savePreferences("entry1", json);
         //displayText("savedpreferences: " +  loadSavedPreferences("entry1"));
+
+        //url = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
+        url = "http://www.androidbegin.com";
+        testJSOUP();
     }
 
     // TODO: Use SherlockActionBar for backwards compatability
@@ -87,6 +100,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void saveGame(Game game, String key){
         String json = gson.toJson(game);
         savePreferences(key, json);
+    }
+
+    private void testJSOUP(){
+        //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
+
+        try {
+            Document doc  = Jsoup.connect(url).get();
+            displayText("TRYING JSOUP");
+            title = doc.title();
+            displayText("TITLE: " + title);
+        } catch (Throwable t) {
+                displayText("Exception");
+                t.printStackTrace();
+        }
+
     }
 
     @Override
