@@ -2,26 +2,15 @@ package com.example.fangb.projectblues;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.sax.Element;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
 
 
@@ -107,7 +96,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void testJSOUP() {
         //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
 
-        PointstreakParse task = new PointstreakParse() {
+        PointstreakParser task = new PointstreakParser() {
             @Override
             protected void onPostExecute(String test) {
                 super.onPostExecute(test);
@@ -117,7 +106,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 displayText(test);
             }
         };
-        task.execute("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
+        task.execute();
     }
 
     @Override
