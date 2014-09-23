@@ -107,17 +107,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void testJSOUP() {
         //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
 
-        HtmlParserTask task = new HtmlParserTask() {
+        PointstreakParse task = new PointstreakParse() {
             @Override
-            protected void onPostExecute(String urlTitle) {
-                super.onPostExecute(urlTitle);
+            protected void onPostExecute(String test) {
+                super.onPostExecute(test);
 
                 // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
                 // to call displayText here (if we tried in doInBackground, it will crash)
-                displayText("Title: " + urlTitle);
+                displayText(test);
             }
         };
-        task.parseUrl("http://www.androidbegin.com");
+        task.execute("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
     }
 
     @Override
