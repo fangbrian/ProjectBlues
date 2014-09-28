@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ import java.util.List;
 public class PointstreakParser extends AsyncTask<Void, Void, String> {
 
     private static final String URL = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
+    private Game currentGame;
 
     @Override
     protected String doInBackground(Void... params) {
@@ -28,7 +30,7 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
 
             // Do stuff with games here
             
-            return "Number of games loaded: " + games.size();
+            return "First Game " + currentGame.toString();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -44,14 +46,14 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
         List<Game> games = new ArrayList<Game>();
         Element curr = fields;
 
-        while (true) {
+        //while (true) {
             Element next = curr.nextElementSibling();
-            if (next == null) break;
+            //if (next == null) break;
 
             Game game = parseGame(next);
             if (game != null) games.add(game);
             curr = next;
-        }
+        //}
 
         return games;
     }
@@ -68,6 +70,14 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
      * @return
      */
     private Game parseGame(Element next) {
-        return null;
+
+        Date currDate = new Date(114, 1, 1, 1, 0);
+
+        Element td = next.select("td").first();
+        String homeTeam = td.select("a").first().text();
+        td = td.nextElementSibling();
+        String awayTeam = td.select("a").first().text();
+        currentGame = new Game(homeTeam, awayTeam, currDate, "East West");
+        return currentGame;
     }
 }
