@@ -8,6 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,8 +19,10 @@ import java.util.List;
  */
 public class PointstreakParser extends AsyncTask<Void, Void, String> {
 
-    private static final String URL = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
+    private static final String URL = "http://www.pointstreak.com/players/players-team-schedule.html?teamid=503916";
+            //"http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
     private Game currentGame;
+    private String rink;
 
     @Override
     protected String doInBackground(Void... params) {
@@ -46,14 +50,18 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
         List<Game> games = new ArrayList<Game>();
         Element curr = fields;
 
-        //while (true) {
+        while (true) {
             Element next = curr.nextElementSibling();
-            //if (next == null) break;
+            if (next == null) break;
 
             Game game = parseGame(next);
-            if (game != null) games.add(game);
+            if (game != null) {
+                games.add(game);
+                currentGame = game;
+                break;
+            }
             curr = next;
-        //}
+        }
 
         return games;
     }
@@ -70,14 +78,82 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
      * @return
      */
     private Game parseGame(Element next) {
-
-        Date currDate = new Date(114, 1, 1, 1, 0);
-
+        //Gets Home Team
         Element td = next.select("td").first();
         String homeTeam = td.select("a").first().text();
+        //Gets Away Team
         td = td.nextElementSibling();
         String awayTeam = td.select("a").first().text();
-        currentGame = new Game(homeTeam, awayTeam, currDate, "East West");
-        return currentGame;
+        //Gets Date
+        td = td.nextElementSibling();
+        String dateString = td.text();
+        //Gets Time
+        td = td.nextElementSibling();
+        String timeString = td.text();
+        //Gets Rink
+        td = td.nextElementSibling();
+        String rinkName = td.select("a").first().text();
+        rink = rinkName;
+
+        if(!rinkName.equals("final")) {
+            Date gameDate = convertDate(dateString, timeString);
+            currentGame = new Game(homeTeam, awayTeam, gameDate, "East West");
+            return currentGame;
+        }
+
+        return null;
+
+    }
+
+    private Date convertDate(String dateString, String timeString){
+        String monthString;
+        int monthInt;
+        int begin = dateString.indexOf(",");
+        monthString = dateString.substring(begin+2,begin+5);
+        monthInt = getMonth(monthString);
+
+        //Get the Day
+        begin = dateString.length() - 2;
+        String day = dateString.substring(begin, dateString.length());
+        int dayInt = Integer.parseInt(day);
+
+        int gameYear;
+        Date currDate = new Date();
+        gameYear = currDate.getYear();
+        if(monthInt < currDate.getMonth() && monthInt >= 0 ){
+            gameYear += 1;
+        }
+
+        //Parse Date TODO:Clean this up
+        String hourString = timeString.substring(0, timeString.indexOf(":"));
+        begin = timeString.indexOf(":");
+        String minuteString = timeString.substring(begin+1, begin+3);
+        begin = timeString.lastIndexOf(" ");
+        String afternoon = timeString.substring(begin+1, timeString.length());
+        int hour = Integer.parseInt(hourString);
+        if(afternoon.equals("pm") && hour < 12){
+            hour += 12;
+            hour = hour%24;
+        }
+        if(afternoon.equals("am") && hour == 12) hour = 0;
+
+        Date gameDate = new Date(gameYear, monthInt, dayInt, hour, Integer.parseInt(minuteString));
+        return gameDate;
+    }
+
+    private int getMonth(String month){
+        if(month.equals("Jan")){ return 0;}
+        else if(month.equals("Feb")){ return 1;}
+        else if(month.equals("Mar")){ return 2;}
+        else if(month.equals("Apr")){ return 3;}
+        else if(month.equals("May")){ return 4;}
+        else if(month.equals("Jun")){ return 5;}
+        else if(month.equals("Jul")){ return 6;}
+        else if(month.equals("Aug")){ return 7;}
+        else if(month.equals("Sep")){ return 8;}
+        else if(month.equals("Oct")){ return 9;}
+        else if(month.equals("Nov")){ return 10;}
+        else if(month.equals("Dec")){ return 11;}
+        else {return 0;}
     }
 }
