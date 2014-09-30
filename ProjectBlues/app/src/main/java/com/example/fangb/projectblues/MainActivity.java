@@ -28,7 +28,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private String url;
     private String title;
 
-
     private SharedPreferences prefs;
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
 
