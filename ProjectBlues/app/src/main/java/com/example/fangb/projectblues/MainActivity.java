@@ -12,6 +12,9 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -52,7 +55,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //displayText("savedpreferences: " +  loadSavedPreferences("entry1"));
 
         //url = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
-        testJSOUP();
+        Timer timer = new Timer ();
+        TimerTask hourlyTask = new TimerTask () {
+            @Override
+            public void run () {
+                //Gather Games
+                gatherGames();
+                //TODO:Save to Shared Preferences
+                //TODO:Clear Memory Allocation for games
+            }
+        };
+
+        // schedule the task to run starting now and then every hour...
+        timer.schedule (hourlyTask, 0l, 1000*60*60);
+
     }
 
     // TODO: Use SherlockActionBar for backwards compatability
@@ -93,17 +109,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
         savePreferences(key, json);
     }
 
-    private void testJSOUP() {
+    private void gatherGames() {
         //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
 
         PointstreakParser task = new PointstreakParser() {
             @Override
-            protected void onPostExecute(String test) {
-                super.onPostExecute(test);
+            protected void onPostExecute(List<Game> games) {
+                super.onPostExecute(games);
 
                 // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
                 // to call displayText here (if we tried in doInBackground, it will crash)
-                displayText(test);
+                //displayText(test);
+
+                if(games != null){
+                    Game test = games.get(1);
+                    displayText(test.toString());
+                }
+
+
             }
         };
         task.execute();

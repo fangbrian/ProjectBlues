@@ -17,15 +17,13 @@ import java.util.List;
 /**
  * Created by fangb on 9/17/2014.
  */
-public class PointstreakParser extends AsyncTask<Void, Void, String> {
+public class PointstreakParser extends AsyncTask<Void, Void, List<Game>> {
 
     private static final String URL = "http://www.pointstreak.com/players/players-team-schedule.html?teamid=503916";
             //"http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
-    private Game currentGame;
-    private String rink;
 
     @Override
-    protected String doInBackground(Void... params) {
+    protected List<Game> doInBackground(Void... params) {
         try {
             Document doc  = Jsoup.connect(URL).get();
             Element fields = doc.select("tr.fields").first();
@@ -34,7 +32,8 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
 
             // Do stuff with games here
             
-            return "First Game " + currentGame.toString();
+            //return "Size of Array List " + games.size();//currentGame.toString();
+            return games;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -57,8 +56,9 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
             Game game = parseGame(next);
             if (game != null) {
                 games.add(game);
-                currentGame = game;
-                break;
+                //Debug
+                //currentGame = game;
+                //break;
             }
             curr = next;
         }
@@ -81,24 +81,28 @@ public class PointstreakParser extends AsyncTask<Void, Void, String> {
         //Gets Home Team
         Element td = next.select("td").first();
         String homeTeam = td.select("a").first().text();
+
         //Gets Away Team
         td = td.nextElementSibling();
-        String awayTeam = td.select("a").first().text();
-        //Gets Date
-        td = td.nextElementSibling();
-        String dateString = td.text();
-        //Gets Time
-        td = td.nextElementSibling();
-        String timeString = td.text();
-        //Gets Rink
-        td = td.nextElementSibling();
-        String rinkName = td.select("a").first().text();
-        rink = rinkName;
+        //Check for end of table
+        if(td != null) {
+            String awayTeam = td.select("a").first().text();
+            //Gets Date
+            td = td.nextElementSibling();
+            String dateString = td.text();
+            //Gets Time
+            td = td.nextElementSibling();
+            String timeString = td.text();
+            //Gets Rink
+            td = td.nextElementSibling();
+            String rinkName = td.select("a").first().text();
 
-        if(!rinkName.equals("final")) {
-            Date gameDate = convertDate(dateString, timeString);
-            currentGame = new Game(homeTeam, awayTeam, gameDate, "East West");
-            return currentGame;
+            //Check if Game is over and if so do not add particular game
+            if (!rinkName.equals("final")) {
+                Date gameDate = convertDate(dateString, timeString);
+                Game currentGame = new Game(homeTeam, awayTeam, gameDate, rinkName);
+                return currentGame;
+            }
         }
 
         return null;
