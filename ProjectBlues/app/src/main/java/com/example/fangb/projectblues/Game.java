@@ -18,6 +18,14 @@ public class Game {
         rinkName = rinkLoc;
     }
 
+    public String getHomeTeam(){
+        return homeTeam;
+    }
+
+    public String getAwayTeam(){
+        return awayTeam;
+    }
+
     @Override
     public String toString(){
         return "Game [homeTeam = " + homeTeam + ", awayTeam = " + awayTeam

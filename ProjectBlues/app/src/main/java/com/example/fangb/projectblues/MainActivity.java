@@ -17,7 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity {
 
     private final Gson gson = new Gson();
     private EditText homeTeam;
@@ -27,9 +27,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TextView textView;
     private String url;
     private String title;
+    private List<Game> gamesScheduled = null;
 
     private SharedPreferences prefs;
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
+    private final static String MY_TEAM = "Knights";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         keyText = (EditText) findViewById(R.id.keyText);
         textView = (TextView) findViewById(R.id.textDisplay);
 
-        findViewById(R.id.saveButton).setOnClickListener(this);
-        findViewById(R.id.clearButton).setOnClickListener(this);
-        findViewById(R.id.displayButton).setOnClickListener(this);
 
         prefs = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         //displayText(json);
@@ -58,9 +57,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         TimerTask hourlyTask = new TimerTask () {
             @Override
             public void run () {
+                //Clear Saved Preferences
+                clearSavedPreferences();
                 //Gather Games
                 gatherGames();
                 //TODO:Save to Shared Preferences
+
                 //TODO:Clear Memory Allocation for games
             }
         };
@@ -84,8 +86,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
         editor.apply();
     }
 
-    private String loadSavedPreferences(String key) {
-        return prefs.getString(key, "Invalid Key");
+    private String loadSavedPreferences() {
+        //Game gameInfo1 = gson.fromJson(json, Game.class);
+        //displayText(gameInfo1.toString());
+        String test = "";
+        for(int i = 0; i < gamesScheduled.size(); i++){
+            Game currGame = gamesScheduled.get(i);
+            String key;
+            if(currGame.getHomeTeam().equals(MY_TEAM)){
+                key = currGame.getAwayTeam();
+            } else {
+                key = currGame.getHomeTeam();
+            }
+            test += prefs.getString(key, "Invalid Key");
+        }
+        return test;
     }
 
     private void clearSavedPreferences(){
@@ -95,12 +110,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     public void save(){
-        Date currDate = new Date(114, 1, 1, 1, 0);
-        Game gameInfo = new Game(homeTeam.getText().toString(), awayTeam.getText().toString(),
-                currDate, rinkName.getText().toString());
-        saveGame(gameInfo, keyText.getText().toString());
 
-        displayText("savedpreferences: " +  loadSavedPreferences(keyText.getText().toString()));
+        for(int i = 0; i < gamesScheduled.size(); i++) {
+            Game currGame = gamesScheduled.get(i);
+            String key;
+            if(currGame.getHomeTeam().equals(MY_TEAM)){
+                key = currGame.getAwayTeam();
+            } else {
+                key = currGame.getHomeTeam();
+            }
+
+            //Key for shared preferences is now the opposing team
+            saveGame(currGame, key);
+        }
     }
 
     private void saveGame(Game game, String key){
@@ -118,14 +140,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
                 // to call displayText here (if we tried in doInBackground, it will crash)
-                //displayText(test);
 
                 if(games != null){
-                    Game test = games.get(1);
-                    displayText(test.toString());
+                    gamesScheduled = games;
                 }
-
-
+                save();
+                displayText(loadSavedPreferences());
             }
         };
         task.execute();
@@ -147,21 +167,4 @@ public class MainActivity extends Activity implements View.OnClickListener {
         textView.setText(message);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.saveButton:
-                save();
-                break;
-
-            case R.id.clearButton:
-                clearSavedPreferences();
-                displayText("Cleared Shared Preferences");
-                break;
-
-            case R.id.displayButton:
-                displayText("savedpreferences: " +  loadSavedPreferences(keyText.getText().toString()));
-                break;
-        }
-    }
 }
