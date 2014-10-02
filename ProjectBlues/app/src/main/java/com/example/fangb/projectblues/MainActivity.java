@@ -15,7 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
+ //TODO: check for internet connectivity
+ //TODO: Notification on the day of the game
 
 public class MainActivity extends Activity {
 
@@ -32,16 +33,15 @@ public class MainActivity extends Activity {
     private SharedPreferences prefs;
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
     private final static String MY_TEAM = "Knights";
+    private final static String NEXT_GAME = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        homeTeam = (EditText) findViewById(R.id.homeText);
-        awayTeam = (EditText) findViewById(R.id.awayText);
-        rinkName = (EditText) findViewById(R.id.rinkText);
-        keyText = (EditText) findViewById(R.id.keyText);
+
+
         textView = (TextView) findViewById(R.id.textDisplay);
 
 
@@ -61,9 +61,6 @@ public class MainActivity extends Activity {
                 clearSavedPreferences();
                 //Gather Games
                 gatherGames();
-                //TODO:Save to Shared Preferences
-
-                //TODO:Clear Memory Allocation for games
             }
         };
 
@@ -86,21 +83,8 @@ public class MainActivity extends Activity {
         editor.apply();
     }
 
-    private String loadSavedPreferences() {
-        //Game gameInfo1 = gson.fromJson(json, Game.class);
-        //displayText(gameInfo1.toString());
-        String test = "";
-        for(int i = 0; i < gamesScheduled.size(); i++){
-            Game currGame = gamesScheduled.get(i);
-            String key;
-            if(currGame.getHomeTeam().equals(MY_TEAM)){
-                key = currGame.getAwayTeam();
-            } else {
-                key = currGame.getHomeTeam();
-            }
-            test += prefs.getString(key, "Invalid Key");
-        }
-        return test;
+    private String loadSavedPreferences(String key) {
+        return prefs.getString(key, "Invalid Key");
     }
 
     private void clearSavedPreferences(){
@@ -114,20 +98,33 @@ public class MainActivity extends Activity {
         for(int i = 0; i < gamesScheduled.size(); i++) {
             Game currGame = gamesScheduled.get(i);
             String key;
-            if(currGame.getHomeTeam().equals(MY_TEAM)){
-                key = currGame.getAwayTeam();
-            } else {
-                key = currGame.getHomeTeam();
-            }
+            key = Integer.toString(i);
 
             //Key for shared preferences is now the opposing team
-            saveGame(currGame, key);
+            saveJSON(currGame, key);
         }
     }
 
-    private void saveGame(Game game, String key){
+    private void saveJSON(Game game, String key){
         String json = gson.toJson(game);
         savePreferences(key, json);
+    }
+
+    private Game convertJSONToGame(String json){
+        Game game = gson.fromJson(json, Game.class);
+        return game;
+    }
+
+    private void updateNextGame(){
+
+        if(prefs.contains(NEXT_GAME)){
+            String jsonGame = loadSavedPreferences(NEXT_GAME);
+            Game game = convertJSONToGame(jsonGame);
+            displayText(game.displayGame());
+
+        } else{
+            displayText("Error");
+        }
     }
 
     private void gatherGames() {
@@ -145,7 +142,11 @@ public class MainActivity extends Activity {
                     gamesScheduled = games;
                 }
                 save();
-                displayText(loadSavedPreferences());
+                updateNextGame();
+                //TODO:parse through games to see if there is a game today
+                    //if internet not available use shared preferences
+                    //if available used most up to date schedule
+                //TODO:if there is a game today, send notification
             }
         };
         task.execute();

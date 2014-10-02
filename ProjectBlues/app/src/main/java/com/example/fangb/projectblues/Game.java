@@ -26,6 +26,12 @@ public class Game {
         return awayTeam;
     }
 
+    public String displayGame(){
+        String display = "Next Game: " + gameTime.toString() + " " + homeTeam + " vs. " + awayTeam + " @ "
+                + rinkName;
+        return display;
+    }
+
     @Override
     public String toString(){
         return "Game [homeTeam = " + homeTeam + ", awayTeam = " + awayTeam
