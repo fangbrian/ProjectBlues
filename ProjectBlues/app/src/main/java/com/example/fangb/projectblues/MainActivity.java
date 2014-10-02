@@ -1,7 +1,10 @@
 package com.example.fangb.projectblues;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,7 @@ public class MainActivity extends Activity {
     private EditText rinkName;
     private EditText keyText;
     private TextView textView;
+    private TextView displayStandings;
     private String url;
     private String title;
     private List<Game> gamesScheduled = null;
@@ -40,11 +44,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         textView = (TextView) findViewById(R.id.textDisplay);
-
-
+        displayStandings = (TextView) findViewById(R.id.textStandings);
         prefs = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         //displayText(json);
         //Game gameInfo1 = gson.fromJson(json, Game.class);
@@ -57,10 +58,17 @@ public class MainActivity extends Activity {
         TimerTask hourlyTask = new TimerTask () {
             @Override
             public void run () {
-                //Clear Saved Preferences
-                clearSavedPreferences();
-                //Gather Games
-                gatherGames();
+
+                if(isNetworkAvailable()) {
+                    //Clear Saved Preferences
+                    clearSavedPreferences();
+                    //Gather Games
+                    gatherGames();
+                    //Gather Standings
+                    gatherStandings();
+                } else {
+                    displayText("No Internet Connection");
+                }
             }
         };
 
@@ -75,6 +83,13 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
         return true;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void savePreferences(String key, String value) {
@@ -128,7 +143,6 @@ public class MainActivity extends Activity {
     }
 
     private void gatherGames() {
-        //URL url = new URL("http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867");
 
         PointstreakParser task = new PointstreakParser() {
             @Override
@@ -144,9 +158,27 @@ public class MainActivity extends Activity {
                 save();
                 updateNextGame();
                 //TODO:parse through games to see if there is a game today
-                    //if internet not available use shared preferences
-                    //if available used most up to date schedule
+                //if internet not available use shared preferences
+                //if available used most up to date schedule
                 //TODO:if there is a game today, send notification
+            }
+        };
+        task.execute();
+    }
+
+    private void gatherStandings() {
+
+        StandingsParser task = new StandingsParser() {
+            @Override
+            protected void onPostExecute(String teams) {
+                super.onPostExecute(teams);
+
+                // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
+                // to call displayText here (if we tried in doInBackground, it will crash)
+
+                if(teams != null){
+                    printStandings(teams);
+                }
             }
         };
         task.execute();
@@ -168,4 +200,7 @@ public class MainActivity extends Activity {
         textView.setText(message);
     }
 
+    private void printStandings(String message){
+        displayStandings.setText(message);
+    }
 }
