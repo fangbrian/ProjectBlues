@@ -1,7 +1,11 @@
 package com.example.fangb.projectblues;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,21 +22,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import android.support.v4.app.NotificationCompat;
+
+
+
+
  //TODO: check for internet connectivity
  //TODO: Notification on the day of the game
 
 public class MainActivity extends Activity {
 
     private final Gson gson = new Gson();
-    private EditText homeTeam;
-    private EditText awayTeam;
-    private EditText rinkName;
-    private EditText keyText;
     private TextView textView;
     private TextView displayStandings;
-    private String url;
-    private String title;
     private List<Game> gamesScheduled = null;
+    private NotificationManager myNotificationManager;
 
     private SharedPreferences prefs;
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
@@ -47,13 +51,8 @@ public class MainActivity extends Activity {
         textView = (TextView) findViewById(R.id.textDisplay);
         displayStandings = (TextView) findViewById(R.id.textStandings);
         prefs = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
-        //displayText(json);
-        //Game gameInfo1 = gson.fromJson(json, Game.class);
-        //displayText(gameInfo1.toString());
-        //savePreferences("entry1", json);
-        //displayText("savedpreferences: " +  loadSavedPreferences("entry1"));
+        //initializeNotification();
 
-        //url = "http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
         Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
             @Override
@@ -67,12 +66,16 @@ public class MainActivity extends Activity {
                     //Gather Standings
                     gatherStandings();
                 } else {
-                    displayText("No Internet Connection");
+                    if(prefs.contains(NEXT_GAME)){
+                        updateNextGame();
+                    } else {
+                        displayText("Waiting for Internet Connection");
+                    }
                 }
             }
         };
 
-        // schedule the task to run starting now and then every hour...
+        //Schedule updates every hour
         timer.schedule (hourlyTask, 0l, 1000*60*60);
 
     }
@@ -84,6 +87,30 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.my, menu);
         return true;
     }
+/*
+    private void initializeNotification(){
+        // Invoking the default notification service
+        NotificationCompat.Builder  mBuilder = new NotificationCompat.Builder(this);
+
+        mBuilder.setContentTitle("New Message with explicit intent");
+        mBuilder.setContentText("New message from javacodegeeks received");
+        mBuilder.setTicker("Explicit: New Message Received!");
+        mBuilder.setSmallIcon(R.drawable.ic_launcher);
+
+
+
+        // start the activity when the user clicks the notification text
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        myNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // pass the Notification object to the system
+        myNotificationManager.notify(notificationIdOne, mBuilder.build());
+
+
+    }
+    */
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
@@ -114,8 +141,6 @@ public class MainActivity extends Activity {
             Game currGame = gamesScheduled.get(i);
             String key;
             key = Integer.toString(i);
-
-            //Key for shared preferences is now the opposing team
             saveJSON(currGame, key);
         }
     }
@@ -138,7 +163,7 @@ public class MainActivity extends Activity {
             displayText(game.displayGame());
 
         } else{
-            displayText("Error");
+            displayText("Error. No games exist");
         }
     }
 
@@ -173,11 +198,12 @@ public class MainActivity extends Activity {
             protected void onPostExecute(String teams) {
                 super.onPostExecute(teams);
 
-                // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
-                // to call displayText here (if we tried in doInBackground, it will crash)
+                // onPostExecute will print the standings
 
                 if(teams != null){
                     printStandings(teams);
+                } else{
+                    printStandings("");
                 }
             }
         };
