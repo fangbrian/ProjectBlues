@@ -1,28 +1,24 @@
 package com.example.fangb.projectblues;
 
-import android.app.Activity;
-import android.app.Notification;
+import android.support.v4.app.FragmentTransaction;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import android.support.v4.app.NotificationCompat;
 
 
 
@@ -30,7 +26,7 @@ import android.support.v4.app.NotificationCompat;
  //TODO: check for internet connectivity
  //TODO: Notification on the day of the game
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private final Gson gson = new Gson();
     private TextView textView;
@@ -42,14 +38,81 @@ public class MainActivity extends Activity {
     private final static String SHARED_PREFS_NAME = "BluesPreferences";
     private final static String MY_TEAM = "Knights";
     private final static String NEXT_GAME = "0";
+    private ViewPager mPager;
+    ActionBar mActionbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("TEAM KNIGHTS");
+        /** Getting a reference to action bar of this activity */
+        mActionbar = getSupportActionBar();
 
-        textView = (TextView) findViewById(R.id.textDisplay);
-        displayStandings = (TextView) findViewById(R.id.textStandings);
+        /** Set tab navigation mode */
+        mActionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        /** Getting a reference to ViewPager from the layout */
+        mPager = (ViewPager) findViewById(R.id.pager);
+
+        /** Getting a reference to FragmentManager */
+        FragmentManager fm = getSupportFragmentManager();
+
+        /** Defining a listener for pageChange */
+        ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                mActionbar.setSelectedNavigationItem(position);
+            }
+        };
+
+        /** Setting the pageChange listener to the viewPager */
+        mPager.setOnPageChangeListener(pageChangeListener);
+
+        /** Creating an instance of FragmentPagerAdapter */
+        MyFragmentPagerAdapter fragmentPagerAdapter = new MyFragmentPagerAdapter(fm);
+
+        /** Setting the FragmentPagerAdapter object to the viewPager object */
+        mPager.setAdapter(fragmentPagerAdapter);
+
+        mActionbar.setDisplayShowTitleEnabled(true);
+
+        /** Defining tab listener */
+        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+
+            @Override
+            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            }
+
+            @Override
+            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+                mPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            }
+
+        };
+
+        /** Creating fragment1 Tab */
+        ActionBar.Tab tab = mActionbar.newTab()
+                .setText("Schedule")
+                .setTabListener(tabListener);
+
+        mActionbar.addTab(tab);
+
+        /** Creating fragment2 Tab */
+        tab = mActionbar.newTab()
+                .setText("Rankings")
+                .setTabListener(tabListener);
+
+        mActionbar.addTab(tab);
+
+        //VIEWPAGER
+        //textView = (TextView) findViewById(R.id.textDisplay);
+        //displayStandings = (TextView) findViewById(R.id.textStandings);
         prefs = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         //initializeNotification();
 
@@ -63,13 +126,14 @@ public class MainActivity extends Activity {
                     clearSavedPreferences();
                     //Gather Games
                     gatherGames();
+                    testGatherService();
                     //Gather Standings
                     gatherStandings();
                 } else {
                     if(prefs.contains(NEXT_GAME)){
                         updateNextGame();
                     } else {
-                        displayText("Waiting for Internet Connection");
+                        //displayText("Waiting for Internet Connection");
                     }
                 }
             }
@@ -80,13 +144,6 @@ public class MainActivity extends Activity {
 
     }
 
-    // TODO: Use SherlockActionBar for backwards compatability
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my, menu);
-        return true;
-    }
 /*
     private void initializeNotification(){
         // Invoking the default notification service
@@ -160,10 +217,10 @@ public class MainActivity extends Activity {
         if(prefs.contains(NEXT_GAME)){
             String jsonGame = loadSavedPreferences(NEXT_GAME);
             Game game = convertJSONToGame(jsonGame);
-            displayText(game.displayGame());
+            //displayText(game.displayGame());
 
         } else{
-            displayText("Error. No games exist");
+            //displayText("Error. No games exist");
         }
     }
 
@@ -191,6 +248,11 @@ public class MainActivity extends Activity {
         task.execute();
     }
 
+    private void testGatherService(){
+        Intent msgIntent = new Intent(this, WebParser.class);
+        startService(msgIntent);
+    }
+
     private void gatherStandings() {
 
         StandingsParser task = new StandingsParser() {
@@ -201,13 +263,23 @@ public class MainActivity extends Activity {
                 // onPostExecute will print the standings
 
                 if(teams != null){
-                    printStandings(teams);
+                    //printStandings(teams);
                 } else{
-                    printStandings("");
+                    //printStandings("");
                 }
             }
         };
         task.execute();
+    }
+
+/* SHERLOCK ACTION BAR
+    // TODO: Use SherlockActionBar for backwards compatability
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getSupportMenuInflater().inflate(R.menu.my, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -222,11 +294,19 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    */
+
+/*
     private void displayText(String message) {
         textView.setText(message);
     }
 
+
     private void printStandings(String message){
         displayStandings.setText(message);
     }
+
+    */
+
+
 }
