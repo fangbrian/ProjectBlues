@@ -12,10 +12,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,7 +32,6 @@ import java.util.TimerTask;
 public class MainActivity extends ActionBarActivity {
 
     private final Gson gson = new Gson();
-    private TextView textView;
     private TextView displayStandings;
     private List<Game> gamesScheduled = null;
     private NotificationManager myNotificationManager;
@@ -46,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("TEAM KNIGHTS");
+
         /** Getting a reference to action bar of this activity */
         mActionbar = getSupportActionBar();
 
@@ -109,6 +112,8 @@ public class MainActivity extends ActionBarActivity {
                 .setTabListener(tabListener);
 
         mActionbar.addTab(tab);
+
+
 
         //VIEWPAGER
         //textView = (TextView) findViewById(R.id.textDisplay);
@@ -239,6 +244,7 @@ public class MainActivity extends ActionBarActivity {
                 }
                 save();
                 updateNextGame();
+
                 //TODO:parse through games to see if there is a game today
                 //if internet not available use shared preferences
                 //if available used most up to date schedule
@@ -247,6 +253,8 @@ public class MainActivity extends ActionBarActivity {
         };
         task.execute();
     }
+
+
 
     private void testGatherService(){
         Intent msgIntent = new Intent(this, WebParser.class);
