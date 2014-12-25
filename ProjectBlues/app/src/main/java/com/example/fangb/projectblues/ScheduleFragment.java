@@ -147,7 +147,7 @@ public class ScheduleFragment extends Fragment {
 
         if(gamesScheduled != null) {
             List<String> gamelst = new ArrayList<String>();
-            for (int i = 1; i < gamesScheduled.size(); i++) {
+            for (int i = 0; i < gamesScheduled.size(); i++) {
                 gamelst.add(gamesScheduled.get(i).toString());
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
