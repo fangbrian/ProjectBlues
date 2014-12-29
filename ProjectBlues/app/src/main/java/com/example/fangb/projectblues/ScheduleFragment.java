@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.fangb.projectblues.utils.DeviceUtils;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class ScheduleFragment extends Fragment {
             @Override
             public void run () {
 
-                if(isNetworkAvailable()) {
+                if (DeviceUtils.isNetworkAvailable(getActivity())) {
                     //Clear Saved Preferences
                     clearSavedPreferences();
                     //Gather Games
@@ -82,14 +83,6 @@ public class ScheduleFragment extends Fragment {
         //Schedule updates every hour
         timer.schedule (hourlyTask, 0l, 1000*60*60);
 
-    }
-
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void clearSavedPreferences(){
