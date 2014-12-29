@@ -1,5 +1,6 @@
 package com.example.fangb.projectblues;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,6 +25,8 @@ import java.util.TimerTask;
  */
 public class RankingFragment extends Fragment {
     private ListView rankingList;
+    private RankingsAdapter mAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -32,10 +38,10 @@ public class RankingFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAdapter = new RankingsAdapter(getActivity());
+        rankingList.setAdapter(mAdapter);
 
         parseHtmlRankings();
-
-
     }
 
     private void parseHtmlRankings(){
@@ -76,13 +82,9 @@ public class RankingFragment extends Fragment {
 
                 if(teams != null){
                     //Print Standings
-                    List<String> rankinglst = new ArrayList<String>();
-                    for (int i = 0; i < teams.size(); i++) {
-                        rankinglst.add(teams.get(i));
-                    }
-//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-//                            R.layout.game_row, rankinglst);
-//                    rankingList.setAdapter(adapter);
+
+                    mAdapter.setRankings(teams);
+                    mAdapter.notifyDataSetChanged();
                 } else{
                     //printStandings("");
                 }
@@ -91,5 +93,46 @@ public class RankingFragment extends Fragment {
         task.execute();
     }
 
+    private static class RankingsAdapter extends BaseAdapter {
+        private final Context mContext;
+        private List<String> mRankings = Collections.emptyList();
 
+        public RankingsAdapter(Context context) {
+            mContext = context;
+        }
+
+        public void setRankings(List<String> rankings) {
+            mRankings = rankings;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater mInflater = (LayoutInflater) mContext
+                        .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+                convertView = mInflater.inflate(R.layout.rankings_row, parent, false);
+            }
+
+            TextView rankingView = (TextView) convertView.findViewById(R.id.team_ranking);
+            String ranking = mRankings.get(position);
+            rankingView.setText(ranking);
+
+            return convertView;
+        }
+
+        @Override
+        public int getCount() {
+            return mRankings.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mRankings.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+    }
 }
