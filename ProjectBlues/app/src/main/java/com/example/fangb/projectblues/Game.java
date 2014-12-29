@@ -28,7 +28,12 @@ public class Game {
 
     public String getRinkName() { return rinkName; }
 
-    public String getGameTime() { return gameTime.toString(); }
+    public String getGameTime() {
+        String gameString = gameTime.toString();
+        return gameString.substring(0,gameString.indexOf("EST"))
+                + gameString.substring(gameString.indexOf("EST")+4);
+        //return gameTime.toString();
+        }
 
     public String displayGame(){
         String display = "Next Game: " + gameTime.toString() + " " + homeTeam + " vs. " + awayTeam + " @ "
