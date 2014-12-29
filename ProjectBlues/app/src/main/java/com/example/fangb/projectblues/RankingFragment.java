@@ -14,6 +14,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.fangb.projectblues.utils.DeviceUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +52,7 @@ public class RankingFragment extends Fragment {
             @Override
             public void run () {
 
-                if(isNetworkAvailable()) {
+                if (DeviceUtils.isNetworkAvailable(getActivity())) {
                     //Gather Standings
                     gatherStandings();
                 } else {
@@ -62,13 +64,6 @@ public class RankingFragment extends Fragment {
         //Schedule updates every hour
         timer.schedule (hourlyTask, 0l, 1000*60*60);
 
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void gatherStandings() {
