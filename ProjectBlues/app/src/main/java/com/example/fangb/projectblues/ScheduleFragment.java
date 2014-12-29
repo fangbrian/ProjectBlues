@@ -146,12 +146,9 @@ public class ScheduleFragment extends Fragment {
     private void updateListOfGames(){
 
         if(gamesScheduled != null) {
-            List<String> gamelst = new ArrayList<String>();
-            for (int i = 0; i < gamesScheduled.size(); i++) {
-                gamelst.add(gamesScheduled.get(i).toString());
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                    R.layout.game_row, gamelst);
+
+           GameAdapter adapter = new GameAdapter(getActivity(),
+                    gamesScheduled);
             gameList.setAdapter(adapter);
         }
 

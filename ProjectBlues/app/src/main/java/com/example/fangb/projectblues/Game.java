@@ -26,6 +26,10 @@ public class Game {
         return awayTeam;
     }
 
+    public String getRinkName() { return rinkName; }
+
+    public String getGameTime() { return gameTime.toString(); }
+
     public String displayGame(){
         String display = "Next Game: " + gameTime.toString() + " " + homeTeam + " vs. " + awayTeam + " @ "
                 + rinkName;
