@@ -23,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
+ * Fragment to display rankings of hockey teams
  * Created by fangb on 12/22/2014.
  */
 public class RankingFragment extends Fragment {
@@ -32,6 +33,7 @@ public class RankingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.schedule_fragment, null);
         rankingList = (ListView) rootView.findViewById(R.id.gamelist);
         return rootView;
@@ -40,52 +42,33 @@ public class RankingFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mAdapter = new RankingsAdapter(getActivity());
         rankingList.setAdapter(mAdapter);
-
-        parseHtmlRankings();
     }
 
-    private void parseHtmlRankings(){
-        Timer timer = new Timer ();
-        TimerTask hourlyTask = new TimerTask () {
-            @Override
-            public void run () {
-
-                if (DeviceUtils.isNetworkAvailable(getActivity())) {
-                    //Gather Standings
-                    gatherStandings();
-                } else {
-
-                }
-            }
-        };
-
-        //Schedule updates every hour
-        timer.schedule (hourlyTask, 0l, 1000*60*60);
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        refreshRankings();
     }
 
-    private void gatherStandings() {
-
-        StandingsParser task = new StandingsParser() {
+    private void refreshRankings() {
+        new StandingsParser() {
             @Override
             protected void onPostExecute(List<String> teams) {
                 super.onPostExecute(teams);
 
                 // onPostExecute will print the standings
-
                 if(teams != null){
                     //Print Standings
-
                     mAdapter.setRankings(teams);
                     mAdapter.notifyDataSetChanged();
                 } else{
                     //printStandings("");
                 }
             }
-        };
-        task.execute();
+        }.execute();
     }
 
     private static class RankingsAdapter extends BaseAdapter {
