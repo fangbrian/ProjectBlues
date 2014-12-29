@@ -6,10 +6,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,11 +19,10 @@ import java.util.List;
 public class GameAdapter extends BaseAdapter {
 
     Context context;
-    List<Game> gameItems;
+    private List<Game> gameItems = Collections.emptyList();
 
-    public GameAdapter(Context context, List<Game> items) {
+    public GameAdapter(Context context) {
         this.context = context;
-        this.gameItems = items;
     }
 
     /*private view holder class*/
@@ -33,6 +32,11 @@ public class GameAdapter extends BaseAdapter {
         TextView txtTime;
     }
 
+    public void setGameItems(List<Game> gameItems) {
+        this.gameItems = gameItems;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
 

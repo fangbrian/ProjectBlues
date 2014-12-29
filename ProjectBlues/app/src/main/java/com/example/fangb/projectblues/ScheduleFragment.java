@@ -9,12 +9,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,6 +31,7 @@ public class ScheduleFragment extends Fragment {
     private List<Game> gamesScheduled = null;
     private final static String NEXT_GAME = "0";
     private final Gson gson = new Gson();
+    private GameAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,9 +46,10 @@ public class ScheduleFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mAdapter = new GameAdapter(getActivity());
+        gameList.setAdapter(mAdapter);
+
         parseHtmlGames();
-
-
     }
 
     public void parseHtmlGames(){
@@ -108,11 +108,11 @@ public class ScheduleFragment extends Fragment {
                 // onPostExecute is guaranteed to be called on the GUI thread, so it's safe
                 // to call displayText here (if we tried in doInBackground, it will crash)
 
-                if(games != null){
-                    gamesScheduled = games;
+                if (games != null) {
+                    mAdapter.setGameItems(games);
+                    mAdapter.notifyDataSetChanged();
+                    save(games);
                 }
-                save();
-                updateListOfGames();
 
                 //TODO:parse through games to see if there is a game today
                 //if internet not available use shared preferences
@@ -123,10 +123,10 @@ public class ScheduleFragment extends Fragment {
         task.execute();
     }
 
-    public void save(){
+    public void save(List<Game> games){
 
-        for(int i = 0; i < gamesScheduled.size(); i++) {
-            Game currGame = gamesScheduled.get(i);
+        for(int i = 0; i < games.size(); i++) {
+            Game currGame = games.get(i);
             String key;
             key = Integer.toString(i);
             saveJSON(currGame, key);
@@ -141,17 +141,6 @@ public class ScheduleFragment extends Fragment {
     private Game convertJSONToGame(String json){
         Game game = gson.fromJson(json, Game.class);
         return game;
-    }
-
-    private void updateListOfGames(){
-
-        if(gamesScheduled != null) {
-
-           GameAdapter adapter = new GameAdapter(getActivity(),
-                    gamesScheduled);
-            gameList.setAdapter(adapter);
-        }
-
     }
 
     private void savePreferences(String key, String value) {

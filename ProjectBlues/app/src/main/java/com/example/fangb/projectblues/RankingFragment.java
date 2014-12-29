@@ -80,9 +80,9 @@ public class RankingFragment extends Fragment {
                     for (int i = 0; i < teams.size(); i++) {
                         rankinglst.add(teams.get(i));
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                            R.layout.game_row, rankinglst);
-                    rankingList.setAdapter(adapter);
+//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+//                            R.layout.game_row, rankinglst);
+//                    rankingList.setAdapter(adapter);
                 } else{
                     //printStandings("");
                 }
