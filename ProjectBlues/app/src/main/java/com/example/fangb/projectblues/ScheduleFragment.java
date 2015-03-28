@@ -1,17 +1,24 @@
 package com.example.fangb.projectblues;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.gson.Gson;
 
 import java.util.List;
+
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Fragment to display schedule of all hockey games
@@ -34,6 +41,37 @@ public class ScheduleFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.schedule_fragment, null);
         gameList = (ListView) rootView.findViewById(R.id.gamelist);
+
+//        gameList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView <?> parent, View view,
+//                                    int position, long id) {
+//                Log.i("debug", "single click");
+//            }
+//        });
+
+        gameList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                TextView gameTeams = (TextView) arg1.findViewById(R.id.opponent);
+                TextView gameTime = (TextView) arg1.findViewById(R.id.time);
+                Log.i("debug", gameTeams.getText().toString());
+                Log.i("debug", gameTime.getText().toString());
+
+                String textMessage = "Next Game: " + gameTeams.getText().toString() + " on " + gameTime.getText().toString();
+
+
+                Intent sendIntent = new Intent();
+                // Set the action to be performed i.e 'Send Data'
+                sendIntent.setAction(Intent.ACTION_SEND);
+                // Add the text to the intent
+                sendIntent.putExtra(Intent.EXTRA_TEXT, textMessage);
+                // Set the type of data i.e 'text/plain'
+                sendIntent.setType("text/plain");
+                // Launches the activity; Open 'Text editor' if you set it as default app to handle Text
+                startActivity(sendIntent);
+            }
+        });
         return rootView;
     }
 

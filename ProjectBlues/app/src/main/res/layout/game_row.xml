@@ -30,14 +30,14 @@ android:layout_width="fill_parent">
         android:text="time"
         android:height="20sp" />
 
-    <TextView android:textColor="#FFFFFF"
-        android:id="@+id/location"
-        android:gravity="right"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="location"
-        android:layout_weight="1"
-        android:height="20sp" />
+    <!--<TextView android:textColor="#FFFFFF"-->
+        <!--android:id="@+id/location"-->
+        <!--android:gravity="right"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="location"-->
+        <!--android:layout_weight="1"-->
+        <!--android:height="20sp" />-->
 
 
 </TableRow>

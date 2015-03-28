@@ -28,7 +28,7 @@ public class GameAdapter extends BaseAdapter {
     /*private view holder class*/
     private class ViewHolder {
         TextView txtOpponent;
-        TextView txtLocation;
+        //TextView txtLocation;
         TextView txtTime;
     }
 
@@ -48,7 +48,7 @@ public class GameAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.game_row, null);
             holder = new ViewHolder();
             holder.txtOpponent = (TextView) convertView.findViewById(R.id.opponent);
-            holder.txtLocation = (TextView) convertView.findViewById(R.id.location);
+            //holder.txtLocation = (TextView) convertView.findViewById(R.id.location);
             holder.txtTime = (TextView) convertView.findViewById(R.id.time);
             convertView.setTag(holder);
         } else
@@ -56,8 +56,8 @@ public class GameAdapter extends BaseAdapter {
 
         Game currGame = (Game) getItem(position);
         holder.txtOpponent.setText(currGame.getAwayTeam() + " vs. " + currGame.getHomeTeam());
-        holder.txtLocation.setText(currGame.getRinkName());
-        holder.txtTime.setText(currGame.getGameTime());
+        //holder.txtLocation.setText(currGame.getRinkName());
+        holder.txtTime.setText(currGame.getGameTime()+ "@" + currGame.getRinkName());
 
         return convertView;
     }

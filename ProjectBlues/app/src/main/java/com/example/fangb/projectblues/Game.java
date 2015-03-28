@@ -1,5 +1,7 @@
 package com.example.fangb.projectblues;
 
+import android.util.Log;
+
 import java.util.Date;
 
 /**
@@ -30,8 +32,8 @@ public class Game {
 
     public String getGameTime() {
         String gameString = gameTime.toString();
-        return gameString.substring(0,gameString.indexOf("EST"))
-                + gameString.substring(gameString.indexOf("EST")+4);
+        return gameString.substring(0,20) + "PST"
+                + gameString.substring(23);
         //return gameTime.toString();
         }
 
