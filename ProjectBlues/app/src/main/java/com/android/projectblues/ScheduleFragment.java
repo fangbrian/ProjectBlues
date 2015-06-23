@@ -1,4 +1,4 @@
-package com.example.fangb.projectblues;
+package com.android.projectblues;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,6 @@ import java.util.List;
 
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Fragment to display schedule of all hockey games

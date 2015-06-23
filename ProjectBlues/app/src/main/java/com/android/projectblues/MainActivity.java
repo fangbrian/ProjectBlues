@@ -1,4 +1,4 @@
-package com.example.fangb.projectblues;
+package com.android.projectblues;
 
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
