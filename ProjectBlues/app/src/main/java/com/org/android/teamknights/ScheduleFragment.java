@@ -1,4 +1,4 @@
-package com.android.projectblues;
+package com.org.android.teamknights;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
-
 import com.google.gson.Gson;
 
 import java.util.List;

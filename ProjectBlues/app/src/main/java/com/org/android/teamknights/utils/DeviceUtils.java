@@ -1,4 +1,4 @@
-package com.android.projectblues.utils;
+package com.org.android.teamknights.utils;
 
 import android.app.Activity;
 import android.content.Context;

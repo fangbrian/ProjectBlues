@@ -1,4 +1,4 @@
-package com.android.projectblues;
+package com.org.android.teamknights;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

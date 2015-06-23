@@ -1,4 +1,4 @@
-package com.android.projectblues;
+package com.org.android.teamknights;
 
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 
 import java.util.List;

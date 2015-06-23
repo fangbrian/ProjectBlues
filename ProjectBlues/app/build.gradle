@@ -5,7 +5,7 @@ android {
     buildToolsVersion '20.0.0'
 
     defaultConfig {
-        applicationId "com.android.projectblues"
+        applicationId "com.org.android.teamknights"
         minSdkVersion 18
         targetSdkVersion 18
         versionCode 1
