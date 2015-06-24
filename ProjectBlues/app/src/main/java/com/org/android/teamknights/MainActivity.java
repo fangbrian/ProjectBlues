@@ -1,4 +1,4 @@
-package com.example.fangb.projectblues;
+package com.org.android.teamknights;
 
 import android.app.NotificationManager;
 import android.content.SharedPreferences;
