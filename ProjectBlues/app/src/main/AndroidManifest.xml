@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.org.android.teamknights" >
+    package="com.example.fangb.projectblues" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/knightlogo"
+        android:icon="@drawable/knights"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat" >
         <activity
-            android:name="com.org.android.teamknights.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

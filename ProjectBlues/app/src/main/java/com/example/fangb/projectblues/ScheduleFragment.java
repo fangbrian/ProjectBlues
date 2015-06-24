@@ -1,4 +1,4 @@
-package com.org.android.teamknights;
+package com.example.fangb.projectblues;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import com.google.gson.Gson;
 
 import java.util.List;
 
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Fragment to display schedule of all hockey games

@@ -1,31 +1,29 @@
-package com.org.android.teamknights;
+package com.example.fangb.projectblues;
 
-import android.app.IntentService;
-import android.content.Intent;
+import android.os.AsyncTask;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by fangb on 10/21/2014.
+ * Created by fangb on 9/17/2014.
  */
-public class WebParser extends IntentService {
+public class PointstreakParser extends AsyncTask<Void, Void, List<Game>> {
 
     private static final String URL = "http://www.pointstreak.com/players/players-team-schedule.html?teamid=503916";
-    //"http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
-
-    public WebParser() {
-        super("WebParser");
-    }
+            //"http://www.pointstreak.com/players/players-division-schedule.html?divisionid=75990&seasonid=12867";
 
     @Override
-    protected void onHandleIntent(Intent intent)  {
+    protected List<Game> doInBackground(Void... params) {
         try {
             Document doc  = Jsoup.connect(URL).get();
             Element fields = doc.select("tr.fields").first();
@@ -33,14 +31,14 @@ public class WebParser extends IntentService {
             List<Game> games = parseGames(fields);
 
             // Do stuff with games here
-
+            
             //return "Size of Array List " + games.size();//currentGame.toString();
-            //return games;
+            return games;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        //return null;
+        return null;
     }
 
     /**

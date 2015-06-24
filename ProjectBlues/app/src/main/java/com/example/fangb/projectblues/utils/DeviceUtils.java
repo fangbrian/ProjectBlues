@@ -1,4 +1,4 @@
-package com.org.android.teamknights.utils;
+package com.example.fangb.projectblues.utils;
 
 import android.app.Activity;
 import android.content.Context;

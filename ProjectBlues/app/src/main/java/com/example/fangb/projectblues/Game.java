@@ -1,4 +1,4 @@
-package com.org.android.teamknights;
+package com.example.fangb.projectblues;
 
 import android.util.Log;
 
